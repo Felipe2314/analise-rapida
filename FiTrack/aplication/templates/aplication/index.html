@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack - Seus Treinos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            max-width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #3B4CCA;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #10B981;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .workouts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .workout-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .workout-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #10B981, #3B4CCA);
+        }
+
+        .workout-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .workout-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3B4CCA;
+            margin-bottom: 15px;
+        }
+
+        .workout-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .workout-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .start-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+        }
+
+        .quick-start {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-start h2 {
+            color: #3B4CCA;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .quick-btn {
+            background: linear-gradient(135deg, #3B4CCA, #6366F1);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .quick-btn:hover {
+            background: linear-gradient(135deg, #312E81, #3B4CCA);
+            transform: translateY(-3px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .timer {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #10B981;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .logo {
+                max-width: 250px;
+            }
+            
+            .workouts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo.jpg-BtRifbRox7UkSz70ACGnsO0Snfkth6.jpeg" alt="FitTrack Logo" class="logo">
+            <h1>Seus Treinos</h1>
+            <p>Acompanhe seu progresso e mantenha-se em forma</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Treinos Concluídos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">45</div>
+                <div class="stat-label">Minutos Hoje</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Sequência (dias)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">850</div>
+                <div class="stat-label">Calorias Queimadas</div>
+            </div>
+        </div>
+
+        <div class="workouts-grid">
+            <div class="workout-card" onclick="startWorkout('Treino de Força')">
+                <div class="workout-title">💪 Treino de Força</div>
+                <div class="workout-info">
+                    <span>⏱️ 45 min</span>
+                    <span>🔥 350 cal</span>
+                    <span>⭐ Intermediário</span>
+                </div>
+                <div class="workout-description">
+                    Fortalecimento muscular com foco em grandes grupos musculares. Inclui exercícios com peso corporal e equipamentos.
+                </div>
+                <button class="start-btn">Iniciar Treino</button>
+            </div>
+
+            <div class="workout-card" onclick="startWorkout('Cardio HIIT')">
+                <div class="workout-title">🏃‍♂️ Cardio HIIT</div>
+                <div class="workout-info">
+                    <span>⏱️ 30 min</span>
+                    <span>🔥 400 cal</span>
+                    <span>⭐ Avançado</span>
+                </div>
+                <div class="workout-description">
+                    Treino intervalado de alta intensidade para queimar gordura e melhorar o condicionamento cardiovascular.
+                </div>
+                <button class="start-btn">Iniciar Treino</button>
+            </div>
+
+            <div class="workout-card" onclick="startWorkout('Yoga & Flexibilidade')">
+                <div class="workout-title">🧘‍♀️ Yoga & Flexibilidade</div>
+                <div class="workout-info">
+                    <span>⏱️ 25 min</span>
+                    <span>🔥 150 cal</span>
+                    <span>⭐ Iniciante</span>
+                </div>
+                <div class="workout-description">
+                    Sessão relaxante de yoga com foco em flexibilidade, equilíbrio e bem-estar mental.
+                </div>
+                <button class="start-btn">Iniciar Treino</button>
+            </div>
+
+            <div class="workout-card" onclick="startWorkout('Treino Funcional')">
+                <div class="workout-title">⚡ Treino Funcional</div>
+                <div class="workout-info">
+                    <span>⏱️ 35 min</span>
+                    <span>🔥 280 cal</span>
+                    <span>⭐ Intermediário</span>
+                </div>
+                <div class="workout-description">
+                    Exercícios funcionais que melhoram a coordenação, força e mobilidade para atividades do dia a dia.
+                </div>
+                <button class="start-btn">Iniciar Treino</button>
+            </div>
+        </div>
+
+        <div class="quick-start">
+            <h2>Treino Rápido</h2>
+            <p style="margin-bottom: 20px; color: #666;">Não tem muito tempo? Experimente um treino express!</p>
+            <button class="quick-btn" onclick="quickWorkout(5)">5 min</button>
+            <button class="quick-btn" onclick="quickWorkout(10)">10 min</button>
+            <button class="quick-btn" onclick="quickWorkout(15)">15 min</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="workoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Treino Iniciado!</h2>
+            <div class="timer" id="timer">00:00</div>
+            <p id="modalDescription">Seu treino está em andamento. Mantenha o foco!</p>
+            <button class="quick-btn" onclick="pauseWorkout()" id="pauseBtn">Pausar</button>
+            <button class="quick-btn" onclick="stopWorkout()">Finalizar</button>
+        </div>
+    </div>
+
+    <script>
+        let workoutTimer;
+        let seconds = 0;
+        let isRunning = false;
+        let isPaused = false;
+
+        function startWorkout(workoutName) {
+            document.getElementById('modalTitle').textContent = workoutName;
+            document.getElementById('workoutModal').style.display = 'block';
+            startTimer();
+        }
+
+        function quickWorkout(minutes) {
+            document.getElementById('modalTitle').textContent = `Treino Rápido - ${minutes} min`;
+            document.getElementById('modalDescription').textContent = `Treino express de ${minutes} minutos. Vamos lá!`;
+            document.getElementById('workoutModal').style.display = 'block';
+            startTimer();
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                isPaused = false;
+                document.getElementById('pauseBtn').textContent = 'Pausar';
+                workoutTimer = setInterval(updateTimer, 1000);
+            }
+        }
+
+        function updateTimer() {
+            seconds++;
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.getElementById('timer').textContent = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function pauseWorkout() {
+            if (isRunning && !isPaused) {
+                clearInterval(workoutTimer);
+                isPaused = true;
+                isRunning = false;
+                document.getElementById('pauseBtn').textContent = 'Continuar';
+            } else if (isPaused) {
+                startTimer();
+            }
+        }
+
+        function stopWorkout() {
+            clearInterval(workoutTimer);
+            isRunning = false;
+            isPaused = false;
+            
+            // Simular conclusão do treino
+            const completedMinutes = Math.floor(seconds / 60);
+            alert(`Parabéns! Você treinou por ${completedMinutes} minutos!`);
+            
+            closeModal();
+            resetTimer();
+        }
+
+        function closeModal() {
+            document.getElementById('workoutModal').style.display = 'none';
+            if (isRunning) {
+                clearInterval(workoutTimer);
+                isRunning = false;
+                isPaused = false;
+                resetTimer();
+            }
+        }
+
+        function resetTimer() {
+            seconds = 0;
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('pauseBtn').textContent = 'Pausar';
+        }
+
+        // Fechar modal clicando fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('workoutModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Animação de entrada dos cards
+        window.addEventListener('load', function() {
+            const cards = document.querySelectorAll('.workout-card, .stat-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.6s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
